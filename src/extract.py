@@ -95,18 +95,12 @@ class DataLoader:
                 "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/demo-bigquery%40{PROJECT_ID}.iam.gserviceaccount.com",
                 "universe_domain": "googleapis.com"
                 }
-            print(f"Succeded getting credential")
-            with open('credentials_test.json', 'w') as json_file:
-                json.dump(credentials_info, json_file, indent=4)
-            
+            print(f"Succeded getting credential")       
         except:
             print(f"Failed getting credential: {credentials_info}")
 
-
         credentials = Credentials.from_service_account_info(credentials_info)
         client = bigquery.Client(credentials=credentials)
-        # client = bigquery.Client.from_service_account_json('credentials_test.json')
-        os.remove('credentials_test.json')
 
         # Write DataFrame to stream as parquet file; does not hit disk
         with io.BytesIO() as stream:
