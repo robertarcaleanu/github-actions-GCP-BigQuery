@@ -2,7 +2,6 @@ import requests
 import datetime
 import io
 import os
-import json
 import polars as pl
 
 from dataclasses import dataclass
