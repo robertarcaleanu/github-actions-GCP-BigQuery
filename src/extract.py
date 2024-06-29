@@ -86,7 +86,7 @@ class DataLoader:
                 "type": "service_account",
                 "project_id": PROJECT_ID,
                 "private_key_id": PRIVATE_KEY_ID,
-                "private_key": PRIVATE_KEY,
+                "private_key": PRIVATE_KEY.replace("\\n" ,"\n"),
                 "client_email": f"demo-bigquery@{PROJECT_ID}.iam.gserviceaccount.com",
                 "client_id": "117744405171076823965",
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -103,26 +103,26 @@ class DataLoader:
             print(f"Failed getting credential: {credentials_info}")
 
 
-        # credentials = Credentials.from_service_account_info(credentials_info)
-        # client = bigquery.Client(credentials=credentials)
+        credentials = Credentials.from_service_account_info(credentials_info)
+        client = bigquery.Client(credentials=credentials)
         # client = bigquery.Client.from_service_account_json('credentials_test.json')
-        # os.remove('credentials_test.json')
+        os.remove('credentials_test.json')
 
         # Write DataFrame to stream as parquet file; does not hit disk
-        # with io.BytesIO() as stream:
-        #     self.df.write_parquet(stream)
-        #     # df.head(5).write_parquet(stream)
-        #     stream.seek(0)
-        #     job = client.load_table_from_file(
-        #         stream,
-        #         destination=f'{PROJECT_ID}.demobigquery.arrivals-bcn',
-        #         project=PROJECT_ID,
-        #         job_config=bigquery.LoadJobConfig(
-        #             source_format=bigquery.SourceFormat.PARQUET,
+        with io.BytesIO() as stream:
+            self.df.write_parquet(stream)
+            # df.head(5).write_parquet(stream)
+            stream.seek(0)
+            job = client.load_table_from_file(
+                stream,
+                destination=f'{PROJECT_ID}.demobigquery.arrivals-bcn',
+                project=PROJECT_ID,
+                job_config=bigquery.LoadJobConfig(
+                    source_format=bigquery.SourceFormat.PARQUET,
                     
-        #         ),
-        #     )
-        # job.result()  # Waits for the job to complete
+                ),
+            )
+        job.result()  # Waits for the job to complete
 
 
 def store_logs(all_data: pl.DataFrame):
