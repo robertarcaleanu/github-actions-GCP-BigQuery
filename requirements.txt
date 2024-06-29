@@ -1,5 +1,5 @@
 polars==0.20.31
-yfinance==0.2.40
-pandas==2.1.4
-requests
-dotenv
+# yfinance==0.2.40
+# pandas==2.1.4
+requests==2.31.0
+dotenv==0.21.0
