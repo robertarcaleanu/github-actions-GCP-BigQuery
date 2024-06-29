@@ -5,7 +5,11 @@ from src.extract import auth_param, get_data, clean_data, DataLoader
 from dotenv import load_dotenv
 
 def main():
-    load_dotenv()
+    try:
+        load_dotenv()
+    except:
+        pass
+    
     ENDPOINT = "/flights/arrival"
     airport = "LEBL"
 
@@ -25,6 +29,7 @@ def main():
     data = clean_data(data)
     loader = DataLoader(data)
     loader.load_locally()
+    loader.load_to_bigquery()
 
 
 if __name__ == "__main__":

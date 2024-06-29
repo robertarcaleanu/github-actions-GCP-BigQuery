@@ -1,8 +1,14 @@
 import requests
-from requests.auth import HTTPBasicAuth
-import polars as pl
-from dataclasses import dataclass
 import datetime
+import io
+import os
+import json
+import polars as pl
+
+from dataclasses import dataclass
+from requests.auth import HTTPBasicAuth
+from google.cloud import bigquery
+from google.oauth2.service_account import Credentials
 
 @dataclass
 class auth_param:
@@ -70,12 +76,47 @@ class DataLoader:
 
     def load_to_bigquery(self):
         # Placeholder for BigQuery loading logic
-        pass
+        PROJECT_ID = os.getenv("PROJECT_ID")
+        PRIVATE_KEY_ID = os.getenv("PRIVATE_KEY_ID")
+        PRIVATE_KEY = os.getenv("PRIVATE_KEY")
+
+        credentials_info = {
+            "type": "service_account",
+            "project_id": PROJECT_ID,
+            "private_key_id": PRIVATE_KEY_ID,
+            "private_key": PRIVATE_KEY,
+            "client_email": f"demo-bigquery@{PROJECT_ID}.iam.gserviceaccount.com",
+            "client_id": "117744405171076823965",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/demo-bigquery%40{PROJECT_ID}.iam.gserviceaccount.com",
+            "universe_domain": "googleapis.com"
+            }
+        credentials = Credentials.from_service_account_info(credentials_info)
+        client = bigquery.Client(credentials=credentials)
+
+        # Write DataFrame to stream as parquet file; does not hit disk
+        with io.BytesIO() as stream:
+            self.df.write_parquet(stream)
+            # df.head(5).write_parquet(stream)
+            stream.seek(0)
+            job = client.load_table_from_file(
+                stream,
+                destination=f'{PROJECT_ID}.demobigquery.arrivals-bcn',
+                project=PROJECT_ID,
+                job_config=bigquery.LoadJobConfig(
+                    source_format=bigquery.SourceFormat.PARQUET,
+                    
+                ),
+            )
+        job.result()  # Waits for the job to complete
 
 
 def store_logs(all_data: pl.DataFrame):
         try:
             logs = pl.read_csv("data/logs.csv")
+            logs = logs.with_columns(pl.col("timestamp").str.strptime(pl.Date))
         except:
             logs = pl.DataFrame()
         
@@ -83,4 +124,4 @@ def store_logs(all_data: pl.DataFrame):
             logs,
             pl.DataFrame([{"rows": all_data.shape[0], "timestamp": datetime.date.today()}])
         ])
-        logs.write_csv("data/logs.csv")
+        logs.unique().write_csv("data/logs.csv")

@@ -25,6 +25,9 @@ jobs:
         env:
           OPEN_SKY_USERNAME: ${{ secrets.OPEN_SKY_USERNAME }}
           OPEN_SKY_PASSWORD: ${{ secrets.OPEN_SKY_PASSWORD }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: python main.py # run data pipeline
       - name: Check for changes # create env variable indicating if any changes were made
         id: git-check
