@@ -106,23 +106,23 @@ class DataLoader:
         # credentials = Credentials.from_service_account_info(credentials_info)
         # client = bigquery.Client(credentials=credentials)
         client = bigquery.Client.from_service_account_json('credentials_test.json')
-        os.remove('credentials_test.json')
+        # os.remove('credentials_test.json')
 
         # Write DataFrame to stream as parquet file; does not hit disk
-        with io.BytesIO() as stream:
-            self.df.write_parquet(stream)
-            # df.head(5).write_parquet(stream)
-            stream.seek(0)
-            job = client.load_table_from_file(
-                stream,
-                destination=f'{PROJECT_ID}.demobigquery.arrivals-bcn',
-                project=PROJECT_ID,
-                job_config=bigquery.LoadJobConfig(
-                    source_format=bigquery.SourceFormat.PARQUET,
+        # with io.BytesIO() as stream:
+        #     self.df.write_parquet(stream)
+        #     # df.head(5).write_parquet(stream)
+        #     stream.seek(0)
+        #     job = client.load_table_from_file(
+        #         stream,
+        #         destination=f'{PROJECT_ID}.demobigquery.arrivals-bcn',
+        #         project=PROJECT_ID,
+        #         job_config=bigquery.LoadJobConfig(
+        #             source_format=bigquery.SourceFormat.PARQUET,
                     
-                ),
-            )
-        job.result()  # Waits for the job to complete
+        #         ),
+        #     )
+        # job.result()  # Waits for the job to complete
 
 
 def store_logs(all_data: pl.DataFrame):
