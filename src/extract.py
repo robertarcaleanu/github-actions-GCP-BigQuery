@@ -75,25 +75,31 @@ class DataLoader:
 
     def load_to_bigquery(self):
         # Placeholder for BigQuery loading logic
-        PROJECT_ID = os.getenv("PROJECT_ID")
-        PRIVATE_KEY_ID = os.getenv("PRIVATE_KEY_ID")
-        PRIVATE_KEY = os.getenv("PRIVATE_KEY")
+        try:
+            PROJECT_ID = os.getenv("PROJECT_ID")
+            PRIVATE_KEY_ID = os.getenv("PRIVATE_KEY_ID")
+            PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
-        credentials_info = {
-            "type": "service_account",
-            "project_id": PROJECT_ID,
-            "private_key_id": PRIVATE_KEY_ID,
-            "private_key": PRIVATE_KEY,
-            "client_email": f"demo-bigquery@{PROJECT_ID}.iam.gserviceaccount.com",
-            "client_id": "117744405171076823965",
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/demo-bigquery%40{PROJECT_ID}.iam.gserviceaccount.com",
-            "universe_domain": "googleapis.com"
-            }
+            credentials_info = {
+                "type": "service_account",
+                "project_id": PROJECT_ID,
+                "private_key_id": PRIVATE_KEY_ID,
+                "private_key": PRIVATE_KEY,
+                "client_email": f"demo-bigquery@{PROJECT_ID}.iam.gserviceaccount.com",
+                "client_id": "117744405171076823965",
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/demo-bigquery%40{PROJECT_ID}.iam.gserviceaccount.com",
+                "universe_domain": "googleapis.com"
+                }
+            print(f"Succeded getting credential: {credentials_info}")
+        except:
+            print(f"Failed getting credential: {credentials_info}")
+            
         credentials = Credentials.from_service_account_info(credentials_info)
         client = bigquery.Client(credentials=credentials)
+        print(client)
 
         # Write DataFrame to stream as parquet file; does not hit disk
         with io.BytesIO() as stream:
