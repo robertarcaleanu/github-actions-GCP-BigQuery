@@ -2,6 +2,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import polars as pl
 from dataclasses import dataclass
+import datetime
 
 @dataclass
 class auth_param:
@@ -50,6 +51,7 @@ class DataLoader:
         self.df = df_data
         self.path = path
 
+
     def load_locally(self, path: str = None):
         # Use the provided path if given, otherwise default to self.path
         if path is None:
@@ -61,12 +63,24 @@ class DataLoader:
         except FileNotFoundError:
             print("No saved data found. Creating new file.")
             historic_data = pl.DataFrame()
-
-        print(historic_data.shape)
+            
         all_data = pl.concat([historic_data, self.df]).unique()
-        print(all_data.shape)
         all_data.write_parquet(path)
+        store_logs(all_data)
 
     def load_to_bigquery(self):
         # Placeholder for BigQuery loading logic
         pass
+
+
+def store_logs(all_data: pl.DataFrame):
+        try:
+            logs = pl.read_csv("data/logs.csv")
+        except:
+            logs = pl.DataFrame()
+        
+        logs = pl.concat([
+            logs,
+            pl.DataFrame([{"rows": all_data.shape[0], "timestamp": datetime.date.today()}])
+        ])
+        logs.write_csv("data/logs.csv")
