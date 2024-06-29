@@ -105,7 +105,6 @@ class DataLoader:
         # Write DataFrame to stream as parquet file; does not hit disk
         with io.BytesIO() as stream:
             self.df.unique().write_parquet(stream)
-            # df.head(5).write_parquet(stream)
             stream.seek(0)
             job = client.load_table_from_file(
                 stream,
