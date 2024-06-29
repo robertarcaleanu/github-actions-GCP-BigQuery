@@ -98,6 +98,7 @@ class DataLoader:
             print(f"Failed getting credential: {credentials_info}")
 
         print(bigquery.__version__)
+        print(type(credentials_info))
         credentials = Credentials.from_service_account_info(credentials_info)
         print(f"Credentials: {credentials}")
         client = bigquery.Client(credentials=credentials)
