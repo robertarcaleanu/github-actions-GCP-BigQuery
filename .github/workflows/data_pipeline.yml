@@ -1,7 +1,8 @@
 name: data-pipeline-workflow
 
 on:
-  # push: # run on push to master branch
+  # Uncomment the line below to run on push to the master branch
+  # push:
   workflow_dispatch: # run on manual trigger
   schedule:
     - cron: "15 0 * * *" # run daily at midnight + 15 minutes
@@ -11,29 +12,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use the PAT instead of the default GITHUB_TOKEN
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
-        - name: Install dependencies
-          run: pip install -r requirements.txt
-        - name: Run data pipeline
-          env:
-            OPEN_SKY_USERNAME: ${{ secrets.OPEN_SKY_USERNAME }}
-            OPEN_SKY_PASSWORD: ${{ secrets.OPEN_SKY_PASSWORD }}
-          run: python main.py
-        - name: Commit and push if changes
-          id: git check
-          run: |
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
-            git add .
-            git commit -m "Update data pipeline output"
-            git push
 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
+      - name: Run data pipeline
+        env:
+          OPEN_SKY_USERNAME: ${{ secrets.OPEN_SKY_USERNAME }}
+          OPEN_SKY_PASSWORD: ${{ secrets.OPEN_SKY_PASSWORD }}
+        run: python main.py
 
+      - name: Commit and push if changes
+        id: git_check
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Update data pipeline output" || echo "No changes to commit"
+          git push
