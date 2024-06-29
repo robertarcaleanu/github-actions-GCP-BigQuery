@@ -96,8 +96,9 @@ class DataLoader:
             print(f"Succeded getting credential: {credentials_info}")
         except:
             print(f"Failed getting credential: {credentials_info}")
-            
+
         credentials = Credentials.from_service_account_info(credentials_info)
+        print(f"Credentials: {credentials}")
         client = bigquery.Client(credentials=credentials)
         print(client)
 
