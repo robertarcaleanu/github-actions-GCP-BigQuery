@@ -1,41 +1,40 @@
 name: data-pipeline-workflow
 
 on:
-  # Uncomment the line below to run on push to the master branch
-  # push:
-  workflow_dispatch: # run on manual trigger
+  # push: # uncomment to run on push
   schedule:
-    - cron: "15 0 * * *" # run daily at midnight + 15 minutes
+    - cron: "35 0 * * *" # run every day at 12:35AM
+  workflow_dispatch:  # manual triggers
 
 jobs:
   run-data-pipeline:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repo content
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use the PAT instead of the default GITHUB_TOKEN
-
-      - name: Setup Python
+      - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.9'
           cache: 'pip'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Run data pipeline
         env:
           OPEN_SKY_USERNAME: ${{ secrets.OPEN_SKY_USERNAME }}
           OPEN_SKY_PASSWORD: ${{ secrets.OPEN_SKY_PASSWORD }}
-        run: python main.py
-
-      - name: Commit and push if changes
-        id: git_check
+        run: python data_pipeline.py # run data pipeline
+      - name: Check for changes # create env variable indicating if any changes were made
+        id: git-check
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
           git add .
-          git commit -m "Update data pipeline output" || echo "No changes to commit"
+          git diff --staged --quiet || echo "changes=true" >> $GITHUB_ENV 
+      - name: Commit and push if changes
+        if: env.changes == 'true' # if changes made push new data to repo
+        run: |
+          git commit -m "updated Repository"
           git push
