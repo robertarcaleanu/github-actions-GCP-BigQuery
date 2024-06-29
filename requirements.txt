@@ -2,3 +2,4 @@ polars==0.20.31
 yfinance==0.2.40
 pandas==2.1.4
 requests
+dotenv

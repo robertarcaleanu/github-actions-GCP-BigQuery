@@ -1,0 +1,39 @@
+name: data-pipeline-workflow
+
+on:
+  # push: # run on push to master branch
+  workflow_dispatch: # run on manual trigger
+  schedule:
+    - cron: "15 0 * * *" # run daily at midnight + 15 minutes
+
+jobs:
+  run-data-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+        - name: Install dependencies
+          run: pip install -r requirements.txt
+        - name: Run data pipeline
+          env:
+            OPEN_SKY_USERNAME: ${{ secrets.OPEN_SKY_USERNAME }}
+            OPEN_SKY_PASSWORD: ${{ secrets.OPEN_SKY_PASSWORD }}
+          run: python main.py
+        - name: Commit and push if changes
+          id: git check
+          run: |
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add .
+            git commit -m "Update data pipeline output"
+            git push
+
+
+
