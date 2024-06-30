@@ -19,7 +19,7 @@ def main():
     )
 
     today = datetime.date.today()
-    end_date = datetime.datetime(today.year, today.month, today.day)
+    end_date = datetime.datetime(today.year, today.month, today.day) - datetime.timedelta(days=1)
     begin_date = end_date - datetime.timedelta(days=1)
 
     begin = int(begin_date.timestamp())
