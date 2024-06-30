@@ -1,0 +1,25 @@
+--- 
+title: "Number of Arrivals to the BCN airport"
+author: "Robert Arcaleanu"
+format: dashboard
+--- 
+
+```{python}
+import plotly.express as px
+import polars as pl
+df = pl.read_parquet("data/data.parquet")
+aux_df = (df
+          .sort("arrival_time")
+          .groupby_dynamic("arrival_time", every="1h")
+          .agg(pl.count().alias("Number of Arrivals"))
+        )
+```
+
+
+## Row {height=60%}
+
+```{python}
+#| title: Number of Arrivals 
+
+px.line(aux_df.to_pandas(), x="arrival_time", y="Number of Arrivals")
+```
