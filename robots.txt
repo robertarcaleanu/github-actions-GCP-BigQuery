@@ -1,0 +1,1 @@
+Sitemap: https://robertarcaleanu.github.io/github-actions-GCP-BigQuery/sitemap.xml
