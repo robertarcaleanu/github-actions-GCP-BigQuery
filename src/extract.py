@@ -129,4 +129,4 @@ def store_logs(all_data: pl.DataFrame):
             logs,
             pl.DataFrame([{"rows": all_data.shape[0], "timestamp": datetime.date.today()}])
         ])
-        logs.unique().write_csv("data/logs.csv")
+        logs.unique().sort("timestamp").write_csv("data/logs.csv")
