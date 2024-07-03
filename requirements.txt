@@ -4,3 +4,4 @@ polars==0.20.31
 requests==2.31.0
 python-dotenv==0.21.0
 google-cloud-bigquery==3.25.0
+plotly==5.9.0
