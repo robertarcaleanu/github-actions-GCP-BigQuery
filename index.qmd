@@ -7,6 +7,7 @@ format: dashboard
 ```{python}
 import plotly.express as px
 import polars as pl
+import pandas as pd
 df = pl.read_parquet("data/data.parquet")
 aux_df = (df
           .sort("arrival_time")
