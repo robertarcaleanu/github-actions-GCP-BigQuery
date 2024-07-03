@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # manual triggers
 
 jobs:
-  run-data-pipeline:
+  run-quarto-rendering:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo content
@@ -37,5 +37,5 @@ jobs:
       - name: Commit and push if changes
         if: env.changes == 'true' # if changes made push new data to repo
         run: |
-          git commit -m "Updated Quarto Reportt"
+          git commit -m "Updated Quarto Report"
           git push
