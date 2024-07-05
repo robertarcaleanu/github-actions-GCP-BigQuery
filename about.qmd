@@ -2,4 +2,4 @@
 title: "About"
 ---
 
-About this site
+See the code [here](https://github.com/robertarcaleanu/github-actions-GCP-BigQuery)
