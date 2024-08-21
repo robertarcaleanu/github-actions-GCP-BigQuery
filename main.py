@@ -29,7 +29,7 @@ def main():
     data = clean_data(data)
     loader = DataLoader(data)
     loader.load_locally()
-    loader.load_to_bigquery()
+    # loader.load_to_bigquery()
 
 
 if __name__ == "__main__":
